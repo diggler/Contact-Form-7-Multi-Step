@@ -33,18 +33,20 @@ function cf7mls_add_shortcode_step()
 }
 add_action('wpcf7_init', 'cf7mls_add_shortcode_step');
 function cf7mls_multistep_shortcode_callback($tag)
-{
     $tag = new WPCF7_Shortcode($tag);
+	$steps = 0;
+	$contact_form = wpcf7_get_current_contact_form();
+	$form_tags = $contact_form->scan_form_tags();
+	$steps += count($form_tags)/2;
     $found = 0;
     $html = '';
-    if ($contact_form = wpcf7_get_current_contact_form()) {
-        $form_tags = $contact_form->scan_form_tags();
+    if ($form_tags) {
         foreach ($form_tags as $k => $v) {
             if ($v['type'] == $tag->type) {
                 $found++;
             }
             if ($v['name'] == $tag->name) {
-                if ($found <= 2) {
+                if ($found <= $steps) {
                     $html = '<button type="button" class="cf7mls_back action-button" name="cf7mls_back">Back</button>';
                     $html .= '<button type="button" class="cf7mls_next cf7mls_btn action-button" name="cf7mls_next">Next</button>';
                     $html .= '</fieldset><fieldset class="fieldset-cf7mls">';
@@ -53,9 +55,6 @@ function cf7mls_multistep_shortcode_callback($tag)
             }
         }
     }
-
-    return $html;
-}
 
 /**
  * Wrap form
